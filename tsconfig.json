@@ -1,0 +1,19 @@
+// target: ES2020        → 编译成哪个版本的 JS（用比较新的）
+// module: CommonJS      → 模块格式用 CommonJS（Node.js 默认支持的）
+// moduleResolution: node → 按 Node.js 的方式找模块
+// esModuleInterop: true  → 让 import express 这种写法能正常工作 ← 修复这个报错的关键
+// strict: true           → 开启严格模式，帮你发现更多错误
+// outDir: ./dist         → 编译后的文件放到 dist 文件夹
+// rootDir: ./src         → 源码在 src 文件夹
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"]
+}
