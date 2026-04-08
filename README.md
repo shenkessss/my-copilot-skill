@@ -15,7 +15,7 @@ my-copilot-skill/
 ├── .github/
 │   └── copilot-instructions.md   ← 全局指令，让 Copilot 自动调用天气工具
 ├── .vscode/
-│   └── mcp.json                  ← 注册 MCP Server
+│   ���── mcp.json                  ← 注册 MCP Server
 ├── src/
 │   └── index.ts                  ← 核心代码（唯一需要写的）
 ├── dist/
@@ -23,6 +23,22 @@ my-copilot-skill/
 ├── package.json
 └── tsconfig.json
 ```
+
+## 📁 每个文件的作用
+
+| 文件 | 必须? | 作用 |
+|---|---|---|
+| `src/index.ts` | ✅ 必须 | MCP Server 核心代码，定义工具逻辑 |
+| `dist/index.js` | ✅ 必须 | `index.ts` 编译后的产物，实际运行的文件 |
+| `.vscode/mcp.json` | ✅ 必须 | 告诉 VS Code 去哪里找 MCP Server |
+| `package.json` | ✅ 必须 | 定义依赖（`@modelcontextprotocol/sdk` 等） |
+| `tsconfig.json` | ✅ 必须 | TypeScript 编译配置 |
+| `node_modules/` | ✅ 必须 | 依赖库（npm install 生成） |
+| `.github/copilot-instructions.md` | ⭐ 建议 | 全局指令，让 Copilot 自动调用天气工具 |
+| `.github/agents/weather-skill.md` | ❌ 可删 | 定义专属 Agent，我们没用到 |
+| `.env` | ❌ 可删 | 环境变量，我们没用到 |
+| `.gitignore` | 🔧 建议 | 排除 `node_modules` 和 `dist` |
+| `package-lock.json` | 🔧 建议 | 锁定依赖版本 |
 
 ## 快速开始
 
