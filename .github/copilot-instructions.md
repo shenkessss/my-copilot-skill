@@ -3,3 +3,6 @@
 
 当用户提到 Xcode 报错、编译错误、Swift 错误时，
 必须先调用 xcode_error_analyzer 工具分析报错内容，再回答。
+
+当用户需要生成 git commit 信息、提交说明、commit message 时，
+必须先调用 git_commit_generator 工具自动读取暂存区改动并生成规范的 commit 信息，再回答。
