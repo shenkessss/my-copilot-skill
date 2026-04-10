@@ -17,7 +17,6 @@ export function registerCodeTemplateGenerator(server: McpServer) {
     async ({ name, pattern, projectPath }) => {
       const basePath = projectPath || DEFAULT_PROJECT_PATH;
 
-      // MVVM: 分3个文件
       const fileMap: Record<string, Record<string, string>> = {
         mvvm: {
           [`${name}Model.swift`]: [
@@ -92,7 +91,6 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           [`${name}Model.swift`]: [
             `import Foundation`,
             ``,
-            `// MARK: - Model`,
             `struct ${name}Model {`,
             `    let id: String`,
             `    let title: String`,
@@ -102,11 +100,8 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           [`${name}ViewController.swift`]: [
             `import UIKit`,
             ``,
-            `// MARK: - ViewController`,
             `class ${name}ViewController: UIViewController {`,
-            ``,
             `    private var items: [${name}Model] = []`,
-            ``,
             `    private lazy var tableView: UITableView = {`,
             `        let tv = UITableView()`,
             `        tv.dataSource = self`,
@@ -114,38 +109,26 @@ export function registerCodeTemplateGenerator(server: McpServer) {
             `        tv.register(UITableViewCell.self, forCellReuseIdentifier: "cell")`,
             `        return tv`,
             `    }()`,
-            ``,
             `    override func viewDidLoad() {`,
             `        super.viewDidLoad()`,
             `        title = "${name}"`,
-            `        setupUI()`,
-            `        fetchData()`,
-            `    }`,
-            ``,
-            `    private func setupUI() {`,
             `        view.addSubview(tableView)`,
             `        tableView.frame = view.bounds`,
+            `        fetchData()`,
             `    }`,
-            ``,
             `    private func fetchData() {`,
             `        // TODO: 调用 API`,
             `        tableView.reloadData()`,
             `    }`,
             `}`,
-            ``,
-            `// MARK: - UITableViewDataSource`,
             `extension ${name}ViewController: UITableViewDataSource {`,
-            `    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {`,
-            `        items.count`,
-            `    }`,
+            `    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { items.count }`,
             `    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {`,
             `        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)`,
             `        cell.textLabel?.text = items[indexPath.row].title`,
             `        return cell`,
             `    }`,
             `}`,
-            ``,
-            `// MARK: - UITableViewDelegate`,
             `extension ${name}ViewController: UITableViewDelegate {`,
             `    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {`,
             `        tableView.deselectRow(at: indexPath, animated: true)`,
@@ -157,8 +140,6 @@ export function registerCodeTemplateGenerator(server: McpServer) {
         clean: {
           [`${name}Entity.swift`]: [
             `import Foundation`,
-            ``,
-            `// MARK: - Entity`,
             `struct ${name}Entity: Identifiable {`,
             `    let id: String`,
             `    let title: String`,
@@ -167,52 +148,34 @@ export function registerCodeTemplateGenerator(server: McpServer) {
 
           [`${name}Repository.swift`]: [
             `import Foundation`,
-            ``,
-            `// MARK: - Repository`,
             `protocol ${name}Repository {`,
             `    func fetch${name}() async throws -> [${name}Entity]`,
             `}`,
-            ``,
             `class ${name}RepositoryImpl: ${name}Repository {`,
-            `    func fetch${name}() async throws -> [${name}Entity] {`,
-            `        // TODO: 调用网络层或本地存储`,
-            `        return []`,
-            `    }`,
+            `    func fetch${name}() async throws -> [${name}Entity] { return [] }`,
             `}`,
           ].join("\n"),
 
           [`${name}UseCase.swift`]: [
             `import Foundation`,
-            ``,
-            `// MARK: - Use Case`,
             `protocol ${name}UseCase {`,
             `    func execute() async throws -> [${name}Entity]`,
             `}`,
-            ``,
             `class ${name}UseCaseImpl: ${name}UseCase {`,
             `    private let repository: ${name}Repository`,
-            `    init(repository: ${name}Repository = ${name}RepositoryImpl()) {`,
-            `        self.repository = repository`,
-            `    }`,
-            `    func execute() async throws -> [${name}Entity] {`,
-            `        try await repository.fetch${name}()`,
-            `    }`,
+            `    init(repository: ${name}Repository = ${name}RepositoryImpl()) { self.repository = repository }`,
+            `    func execute() async throws -> [${name}Entity] { try await repository.fetch${name}() }`,
             `}`,
           ].join("\n"),
 
           [`${name}Presenter.swift`]: [
             `import Foundation`,
-            ``,
-            `// MARK: - Presenter`,
             `@MainActor`,
             `class ${name}Presenter: ObservableObject {`,
             `    @Published var items: [${name}Entity] = []`,
             `    @Published var isLoading = false`,
-            ``,
             `    private let useCase: ${name}UseCase`,
-            `    init(useCase: ${name}UseCase = ${name}UseCaseImpl()) {`,
-            `        self.useCase = useCase`,
-            `    }`,
+            `    init(useCase: ${name}UseCase = ${name}UseCaseImpl()) { self.useCase = useCase }`,
             `    func load() async {`,
             `        isLoading = true`,
             `        defer { isLoading = false }`,
@@ -223,11 +186,8 @@ export function registerCodeTemplateGenerator(server: McpServer) {
 
           [`${name}View.swift`]: [
             `import SwiftUI`,
-            ``,
-            `// MARK: - View`,
             `struct ${name}View: View {`,
             `    @StateObject private var presenter = ${name}Presenter()`,
-            ``,
             `    var body: some View {`,
             `        List(presenter.items) { item in`,
             `            Text(item.title)`,
@@ -236,10 +196,7 @@ export function registerCodeTemplateGenerator(server: McpServer) {
             `        .task { await presenter.load() }`,
             `    }`,
             `}`,
-            ``,
-            `#Preview {`,
-            `    ${name}View()`,
-            `}`,
+            `#Preview { ${name}View() }`,
           ].join("\n"),
         },
       };
@@ -247,7 +204,6 @@ export function registerCodeTemplateGenerator(server: McpServer) {
       const files = fileMap[pattern];
       const outputDir = path.join(basePath, name);
 
-      // 创建目录
       try {
         fs.mkdirSync(outputDir, { recursive: true });
       } catch (e) {
@@ -256,7 +212,6 @@ export function registerCodeTemplateGenerator(server: McpServer) {
         };
       }
 
-      // 写入每个文件
       const createdFiles: string[] = [];
       for (const [fileName, content] of Object.entries(files)) {
         const filePath = path.join(outputDir, fileName);
@@ -270,15 +225,15 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           text: [
             `## ✅ ${name} — ${pattern.toUpperCase()} 模板已写入 Xcode 项目`,
             ``,
-            `📁 目录：\\`${outputDir}\``,
+            `📁 目录：\`${outputDir}\``,
             ``,
             `### 已创建文件：`,
-            ...createdFiles.map(f => `- \\`${path.basename(f)}\\``),
+            ...createdFiles.map(f => `- \`${path.basename(f)}\``),
             ``,
             `### 下一步：`,
             `1. 打开 Xcode`,
             `2. 右键项目目录 → **Add Files to "项目名"**`,
-            `3. 选择 \\`${outputDir}\` 文件夹`,
+            `3. 选择 \`${outputDir}\` 文件夹`,
             `4. 勾选 "Copy items if needed" → Add`,
           ].join("\n"),
         }],
