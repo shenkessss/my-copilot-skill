@@ -56,7 +56,7 @@ export function registerCodeContextCompressor(server: McpServer) {
             : line;
           result.push(sig);
           if (hasBrace) {
-            skipDepth = opens - closes - 1; // -1 because the opening `{` on the sig line
+            skipDepth = opens - closes;
           }
           continue;
         }

@@ -27,19 +27,21 @@ function setNestedValue(
   value: unknown
 ): void {
   const parts = fieldPath.split(".");
+  // Reject paths that contain prototype-polluting keys
+  if (parts.some((p) => DANGEROUS_KEYS.has(p))) return;
+
   let current: Record<string, unknown> = target;
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
-    if (DANGEROUS_KEYS.has(part)) return;
-    if (!(part in current) || typeof current[part] !== "object" || current[part] === null) {
+    const existing = Object.prototype.hasOwnProperty.call(current, part)
+      ? current[part]
+      : undefined;
+    if (existing === null || existing === undefined || typeof existing !== "object" || Array.isArray(existing)) {
       current[part] = {};
     }
     current = current[part] as Record<string, unknown>;
   }
-  const lastKey = parts[parts.length - 1];
-  if (!DANGEROUS_KEYS.has(lastKey)) {
-    current[lastKey] = value;
-  }
+  current[parts[parts.length - 1]] = value;
 }
 
 /**

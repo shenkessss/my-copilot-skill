@@ -77,8 +77,8 @@ export function registerLocalKbQuery(server: McpServer) {
           continue;
         }
 
-        // Split by ## headings (handle sections that start at the beginning of the file too)
-        const sections = fileContent.split(/(?:^|\n)(?=## )/m);
+        // Split by ## headings; prepend newline so the first ## heading is also captured
+        const sections = ("\n" + fileContent).split(/\n(?=## )/);
         for (const section of sections) {
           const lines = section.split("\n");
           const headingLine = lines[0].trim();
