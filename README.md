@@ -11,6 +11,9 @@
 | `git_commit_generator` | 生成commit、提交说明 | 自动读取暂存区改动生成规范 commit 信息 |
 | `swiftui_component_query` | SwiftUI组件用法、控件怎么用 | 返回组件说明、常用参数和示例代码 |
 | `code_template_generator` | 生成模板、MVVM/MVC/Clean架构 | 根据页面名和架构模式生成代码模板 |
+| `code_context_compressor` | 压缩代码、提取代码结构、把长文件变短 | 把 Swift 代码压缩成关键结构摘要，节省 token |
+| `api_doc_trimmer` | 裁剪 API 响应、只保留部分字段 | 自动请求接口 URL，只保留指定字段 |
+| `local_kb_query` | 查询组件用法、设计规范、公司内部规范 | 查询本地知识库 .md 文件，返回相关片段 |
 
 ## 📁 项目结构
 
