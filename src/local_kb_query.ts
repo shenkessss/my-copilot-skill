@@ -77,8 +77,10 @@ export function registerLocalKbQuery(server: McpServer) {
           continue;
         }
 
-        // Split by ## headings; prepend newline so the first ## heading is also captured
-        const sections = ("\n" + fileContent).split(/\n(?=## )/);
+        // Split into sections at ## headings; prepend newline to ensure the first
+        // heading at position 0 is also captured by the \n(?=## ) split pattern.
+        const normalized = fileContent.startsWith("## ") ? "\n" + fileContent : fileContent;
+        const sections = normalized.split(/\n(?=## )/);
         for (const section of sections) {
           const lines = section.split("\n");
           const headingLine = lines[0].trim();

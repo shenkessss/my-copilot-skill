@@ -20,6 +20,8 @@ const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /**
  * Set a nested field path like "data.id" into a target object.
+ * Guards against prototype pollution by validating all path parts upfront
+ * and only assigning to freshly created child objects.
  */
 function setNestedValue(
   target: Record<string, unknown>,
@@ -36,10 +38,15 @@ function setNestedValue(
     const existing = Object.prototype.hasOwnProperty.call(current, part)
       ? current[part]
       : undefined;
-    if (existing === null || existing === undefined || typeof existing !== "object" || Array.isArray(existing)) {
-      current[part] = {};
+    if (typeof existing === "object" && existing !== null && !Array.isArray(existing)) {
+      // Traverse into existing plain-object child
+      current = existing as Record<string, unknown>;
+    } else {
+      // Create a new child object and assign current to it (never to user-controlled existing value)
+      const child: Record<string, unknown> = {};
+      current[part] = child;
+      current = child;
     }
-    current = current[part] as Record<string, unknown>;
   }
   current[parts[parts.length - 1]] = value;
 }

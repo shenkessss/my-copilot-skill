@@ -27,10 +27,10 @@ export function registerCodeContextCompressor(server: McpServer) {
         // If we are inside a skipped body, just track depth
         if (skipDepth > 0) {
           skipDepth += opens - closes;
-          // When skipDepth reaches 0 the body just closed — emit the closing brace
+          // Body just closed — emit the closing brace line as-is
           if (skipDepth <= 0) {
             skipDepth = 0;
-            result.push(line.replace(/[^}\s]/g, "").trimEnd() || trimmed);
+            result.push(line);
           }
           continue;
         }
