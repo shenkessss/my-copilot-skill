@@ -22,7 +22,7 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           [`${name}Model.swift`]: [
             `import Foundation`,
             ``,
-            `// MARK: - Model`,
+            `// MARK: - 数据模型`,
             `struct ${name}Model: Identifiable, Codable {`,
             `    let id: String`,
             `    let title: String`,
@@ -32,7 +32,7 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           [`${name}ViewModel.swift`]: [
             `import Foundation`,
             ``,
-            `// MARK: - ViewModel`,
+            `// MARK: - 视图模型`,
             `@MainActor`,
             `class ${name}ViewModel: ObservableObject {`,
             `    @Published var items: [${name}Model] = []`,
@@ -55,7 +55,7 @@ export function registerCodeTemplateGenerator(server: McpServer) {
           [`${name}View.swift`]: [
             `import SwiftUI`,
             ``,
-            `// MARK: - View`,
+            `// MARK: - 视图`,
             `struct ${name}View: View {`,
             `    @StateObject private var viewModel = ${name}ViewModel()`,
             ``,
