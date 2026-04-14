@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 /**
- * Resolve a nested field path like "data.id" from an object.
+ * 解析对象中的嵌套字段路径，如 "data.id"
  */
 function getNestedValue(obj: unknown, fieldPath: string): unknown {
   const parts = fieldPath.split(".");
@@ -19,9 +19,9 @@ function getNestedValue(obj: unknown, fieldPath: string): unknown {
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /**
- * Set a nested field path like "data.id" into a target object.
- * Guards against prototype pollution by validating all path parts upfront
- * and only assigning to freshly created child objects.
+ * 向目标对象中写入嵌套字段路径（如 "data.id"）
+ * 预先校验所有路径段以防止原型链污染，
+ * 且仅向新创建的子对象赋值
  */
 function setNestedValue(
   target: Record<string, unknown>,
@@ -29,7 +29,7 @@ function setNestedValue(
   value: unknown
 ): void {
   const parts = fieldPath.split(".");
-  // Reject paths that contain prototype-polluting keys
+  // 拒绝包含原型链污染键名的路径
   if (parts.some((p) => DANGEROUS_KEYS.has(p))) return;
 
   let current: Record<string, unknown> = target;
@@ -39,10 +39,10 @@ function setNestedValue(
       ? current[part]
       : undefined;
     if (typeof existing === "object" && existing !== null && !Array.isArray(existing)) {
-      // Traverse into existing plain-object child
+      // 进入已有的普通对象子节点
       current = existing as Record<string, unknown>;
     } else {
-      // Create a new child object and assign current to it (never to user-controlled existing value)
+      // 创建新的子对象并赋值（不操作用户控制的已有值）
       const child: Record<string, unknown> = {};
       current[part] = child;
       current = child;
@@ -52,7 +52,7 @@ function setNestedValue(
 }
 
 /**
- * Count the total number of leaf fields in an object (recursively).
+ * 递归统计对象中所有叶子字段的总数
  */
 function countFields(obj: unknown): number {
   if (obj === null || obj === undefined) return 0;
@@ -107,7 +107,7 @@ export function registerApiDocTrimmer(server: McpServer) {
 
       const originalFieldCount = countFields(rawData);
 
-      // Build trimmed object
+      // 构建裁剪后的对象
       const trimmed: Record<string, unknown> = {};
       for (const field of fields) {
         const value = getNestedValue(rawData, field);

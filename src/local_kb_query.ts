@@ -77,8 +77,8 @@ export function registerLocalKbQuery(server: McpServer) {
           continue;
         }
 
-        // Split into sections at ## headings; prepend newline to ensure the first
-        // heading at position 0 is also captured by the \n(?=## ) split pattern.
+        // 按 ## 标题分割为各节；开头补加换行，确保位于首行的标题
+        // 也能被 \n(?=## ) 分割规则正确匹配到
         const normalized = fileContent.startsWith("## ") ? "\n" + fileContent : fileContent;
         const sections = normalized.split(/\n(?=## )/);
         for (const section of sections) {
@@ -87,7 +87,7 @@ export function registerLocalKbQuery(server: McpServer) {
           const heading = headingLine.replace(/^##\s*/, "");
           const body = lines.slice(1).join("\n").trim();
 
-          // Case-insensitive match against heading + body
+          // 对标题和正文做大小写不敏感匹配
           const combinedText = (heading + "\n" + body).toLowerCase();
           if (combinedText.includes(queryLower)) {
             matches.push({ file: fileName, heading, content: body });
